@@ -10,6 +10,8 @@ const spanLives = document.querySelector('#lives');
 const timePlayed = document.querySelector('#time');
 const setRecord = document.querySelector("#record");
 const setResult = document.querySelector("#result");
+const resetGame = document.querySelector("#reset");
+
 
 // Coordenadas PLAYER
 
@@ -51,13 +53,15 @@ btnDown.addEventListener('click', moveDown);
 
 window.addEventListener('keydown', keysMove);
 
+ resetGame.addEventListener('click', reloadPage);
+
 // Ajustar el tamaño del canvas
 
 function setCanvasSize() {
     if (window.innerHeight > window.innerWidth) {
-      canvasSize = window.innerWidth * 0.7;
+      canvasSize = window.innerWidth * 0.6;
     } else {
-      canvasSize = window.innerHeight * 0.7;
+      canvasSize = window.innerHeight * 0.6;
     }
 
     canvasSize = Number(canvasSize.toFixed(2)); // ajustar a 2 decimales
@@ -290,5 +294,9 @@ function fixNumber(num) {
 
 function showRecord () {
   setRecord.innerHTML = "Record: 🏆" + (localStorage.getItem("record_time")); //
+}
+
+function reloadPage () {
+  return location.reload();
 }
 

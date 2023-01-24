@@ -8,30 +8,39 @@
     <title>Práctica JS - Video Juego 💣</title>
 </head>
 <body>
+    
     <div class="game-container">
-
+        
         <!-- Display game container -->
         <canvas id="game">
 
         </canvas>
 
-        <!-- Displacement btns -->
-        <div class="btns">
-            <button id="up">Arriba</button>
-            <button id="left">Izquierda</button>
-            <button id="right">Derecha</button>
-            <button id="down">Abajo</button>
+        <div class="game-control">
+            <div class="reset-container">
+                <button class="btn-reset" id="reset">Reiniciar</button>
+            </div>
+            <!-- Displacement btns -->
+            <div class="btns">
+                <button id="up">Arriba</button>
+                <button id="left">Izquierda</button>
+                <button id="right">Derecha</button>
+                <button id="down">Abajo</button>
+            </div>
+    
+    
+            <!-- info about game, score ... -->
+            <div class="info-container">
+                <p>Vidas: <span id="lives"></span></p>
+                <p>Tiempo: 🛎️<span id="time"></span></p>
+                <p id="record"><span id="time"></span></p>
+                <p id="result"></p>
+            </div>
+
         </div>
 
-        <!-- info about game, score ... -->
-        <div class="info-container">
-            <p>Vidas: <span id="lives"></span></p>
-            <p>Tiempo: 🛎️<span id="time"></span></p>
-            <p id="record"><span id="time"></span></p>
-            <p id="result"></p>
-        </div>
     </div>
-
+    
     <script src="./maps.js"></script>
     <script src="./game.js"></script>
 </body>
