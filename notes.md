@@ -772,3 +772,239 @@ function levelFailed() {
 }
 
 ```
+
+## Sistema de vidas y corazones
+
+Dentro del contenedor *info-container* dentro del *index.html* vamos a ir mostrando información, de manera dinámica, sobre el juego como lo son las vidas restantes, puntuación, ...
+
+```html
+
+<div class="info-container">
+    <p>Vidas: <span id="lives"></span></p>
+</div>
+
+```
+
+Ahora, haremos la lógica para que esto funcione, iniciando por el **selector** para las vidas.
+
+```javascript
+
+// var para manipular el contenido de SPAN en el HTML
+
+const spanLives = document.querySelector('#lives');
+
+// Se va a crear un función que imprima los corazones - Esta función será ejecutada desde starGame() pues es algo que queremos mostrar desde el comienzo.
+
+function showLives () {
+  // Existen múltiples métodos para insertar elementos dentro de elementos html.
+
+  // spanLives.innerHTML = emojis['HEART']; // insertará en el elemento seleccionado con spanLives el valor que tenga HEART en el objeto emogis
+
+  // crear una variable que guarde el array de los emojis de la cantidad de vidas
+
+  spanLives.innerHTML = ""; // De esta manera reseteamos la caja, evitando que se llene de corazones cada vez que se ejecuta startGame, es decir, en cada accción en la ventana
+  const heartsA = Array(lives).fill(emojis['HEART']); // crea array con lives elementos - Lo llena con .fill(...) con el valor que tenga HEART.
+
+  // Una vez creado el array a través de un FOREACH vamos a llenar la caja del HTML
+
+  heartsA.forEach(heart=>spanLives.append(heart));} // Recorrerá el array creado y por cada corazón  insertaré con el método APPEND() un conrazón
+}
+
+
+```
+
+* con el método **Array(n)** puedo crear un array que no tiene contenido, pero si le defino **n** número de elementos. 
+* *const heartsA = Array(lives)* => Crea entonces un array que sea de la longitud del valor que se tenga en lives. - *fill(emojis['HEART'])* => con .fill vamos a llenar el array con el valor de HEART la cantidad de veces de la longitud del array. Esto se hará cada vez que s ejecute showLives() - .fill() pertenece a la Clase Array()
+
+Vamos a agregar al objeto de emojis en *maps.js* el corazón
+
+```javascript
+
+const emojis = {
+    '-': ' ',
+    'O': '🚪',
+    'X': '💣',
+    'I': '🎁',
+    'PLAYER': '💀',
+    'BOMB_COLLISION': '🔥',
+    'GAME_OVER': '👎',
+    'WIN': '🏆',
+    'HEART': '💚',
+  };
+
+```
+
+## Sistema de tiempo y puntajes.
+
+Mostar la cantidad de tiempo jugado y que está se detenga, cuando el juego lo haga.
+
+
+```html
+<div class="info-container">
+    <p>Vidas: <span id="lives"></span></p>
+    <p>Tiempo de juego: <span id="time"></span></p>
+
+</div>
+
+```
+
+De nuevo, para poder manipular lo que se va a ir insertando en la caja de tiempo de juego, seleccionamos ese SPAN con JS.
+
+```javascript	
+
+// Con esta variable podremos manipular el contenido de la caja ID=TIME
+
+const timePlayed = document.querySelector('#time');
+
+// Ahora se crearan algunas variables para la manipulación del tiempo
+
+let timeStart; // nos servirá para asignarle el tiempo de inicio de la partida - Se hace una pequeña validación, si no existe, se crea, así se vita que el valor se esté reiniciando
+let timePlayer;
+let timeInterval; // acá guardaré
+
+
+// Funciones
+
+function showTime() {
+
+
+  timePlayed.innerHTML = (Date.now() - timeStart) / 1000; // Imprime en la caja la diferencia entre el tiempo en el que se inicio el juego y el momento actual.
+}
+
+// Dentro de startGame() - Esta validación asigna, si no existe, a timeStar el valor del tiempo actualizado
+
+ if (!timeStart) {
+     timeStart = Date.now();
+     timeInterval = setInterval(showTime, 1000); // Asigna un intervalo, cada segundo se ejecutara showtime
+   }
+
+// Dentro de gameWin()
+
+function gameWin () {
+  console.log("ganaste");
+  // window.alert("¡Ganaste! 🎊🎊🎊, ya no quedan más mapas");
+  
+  clearInterval(timeInterval); // Cuando el juego se termine limpiara lo guardado en timeInterval, haciendo que el tiempo se detenga
+}
+
+```
+
+* *setInterval( function(), time)* => Esta función me permite ejecutar, a su vez, la función pasada como parámetro cada cierto intervalo de tiempo (time), medido en **milisengundos**.
+* *setTimeout( function(), time)* => En este caso ejecuta la función 1 sola vez, una vez que se cumpla tiempo *time* luego de su ejecución.
+* Si guardo la lógica de *setInterval(...)* en una variable y luego se la paso por parámetro a la función *clearInterval(cons interval)*, detendría la ejecución de la primera.
+* Date es una clase para manipular tiempo en **JavaScript** - *Date.now()* => retorna el tiempo actual, en milisegundos. ""
+
+
+## LocalStorage
+
+Solo disponible si se está ejecutando en el navegador. Almacenamiento local en el navegador.
+
+La propiedad de sólo lectura **localStorage** te permite acceder al objeto local Storage; los datos persisten almacenados entre de las diferentes sesiones de navegación. **localStorage** es similar a **sessionStorage** (en-US). La **única diferencia** es que, mientras los **datos almacenados en localStorage no tienen fecha de expiración, los datos almacenados en sessionStorage son eliminados cuando finaliza la sesion** de navegación - lo cual ocurre cuando se cierra la página.
+
+### Métodos LocalStorage
+
+| Sintáxis | Propiedad |
+| ------------- | -------------- |
+| LocalStorage.setItem ("var_name", var_value); | Me permite crear una variable (var_name) y asignare un valor (var_value) |
+| LocalStorage.getItem("var_name") | Me permite leer el valor guardado en el variable var_name |
+| LocalStorage.removeItem("var_name") | Me permite eliminar la variable var_name|
+|LocalStorage.clear() | Me permite eliminar todos los objetos creados |
+
+## Guardando y renovando Records
+
+Con la clase **LocalStorage** vamos a crear el sistema de ranking y que permita guardarse en el navegador.
+
+Se creceron dos nuevos parrafos en *info-container*.
+
+```javascript
+
+// Crear los selectores para los nuevos p creados
+
+const setRecord = document.querySelector("#record");
+const setResult = document.querySelector("#result");
+
+function gameWin () {
+  console.log("ganaste");
+  // window.alert("¡Ganaste! 🎊🎊🎊, ya no quedan más mapas");
+   
+  clearInterval(timeInterval);
+  
+  // Guarda en una variable el tiempo jugado
+
+  const playerTime = Date.now() - timeStart;
+
+  // Crear una variable que guarde en LS el record del jugador para su lectura
+
+  const recordTime = LocalStorage.getItem("recordTime");
+
+  // Crear y guardar el LS. - Primero creare la variable SOLO si no existe.
+
+  if (recordTime) {
+    // Valido si existe recordTime, si existe y además es mayor que el primer intento (playerTime) ejecuta lo siguinte 
+    if (recordTime >= playerTime) {
+      // Crear la var recordTime y guardarla en local storage que sería el nuevo valor del jugador playerTime
+
+      localStorage.setItem("recordTime", playerTime); // crea en LS recordTime y le asigna el valor playerTime.
+
+      // Ahora tendría que llenar la caja asociada p.id=result con un innerHTML
+
+      setResult.innerHTML = "Superaste el Record, eres el nuevo campeón 🏆";
+      console.log("Has superado el record!");
+    } else {
+      // Si el tiempo actual es menor, imprimir que el record no fue superado
+
+      setResult.innerHTML = "Lo siento, sigue intentando 🙂";
+    }
+  } else {
+    // Si recordTime no existe, lo creara y le asiganra el valor del playerTime
+
+    localStorage.setItem("recordTime", playerTime); // crea recordTime y le asigna playerTime.
+
+    setResult.innerHTML = "Nuevo puntaje mayor";
+  }
+
+  
+}
+
+// Crear una función para llenar p.id=record 
+
+function showRecord () {
+  setRecord.innerHTML = localStorage.getItem("recordTime"); //
+}
+
+// En starTime() ..
+
+if (!timeStart) {
+     timeStart = Date.now();
+     timeInterval = setInterval(showTime, 1000);
+     showRecord();
+   }
+
+```
+
+## Ajustes y debugging
+
+1. Ajustar el tamño del canvas para evitar scrolling. Se ajustará a 0.7 ambos ejes
+2. Reducir el tamaño de la margen de los elementos.
+3. Reacomodar la calavera.
+4. Crear una función para redondear los valores de las coordenadas y evitar problemas de las validaciones por decimales.
+
+
+```javascript	
+
+setCanvasSize() {
+
+  playerPosition.x = undefined;
+  playerPosition.y = undefined;
+
+
+
+}
+
+// Ajustar el tamaño de los elementos y el canvas para que no haya errores por decimales. - Esta función debería aplicarse en cualquier lugar donde se esté trabajando con coordenadas.
+
+function fixNumber(num) {
+  return Number(num.toFixed(2));
+}
+
+```

@@ -6,6 +6,10 @@ const btnUp = document.querySelector('#up');
 const btnRight = document.querySelector('#right');
 const btnLeft = document.querySelector('#left');
 const btnDown = document.querySelector('#down');
+const spanLives = document.querySelector('#lives');
+const timePlayed = document.querySelector('#time');
+const setRecord = document.querySelector("#record");
+const setResult = document.querySelector("#result");
 
 // Coordenadas PLAYER
 
@@ -34,6 +38,9 @@ let canvasSize; // Coordenadas canvas
 let elementsSize; // Tamaño elementos
 let level = 0; // Mapa
 let lives = 3; // Vidas
+let timeStart; // tiempo de inicio
+let timePlayer;
+let timeInterval;
 
 // Eventos de la aplicación
 
@@ -48,15 +55,20 @@ window.addEventListener('keydown', keysMove);
 
 function setCanvasSize() {
     if (window.innerHeight > window.innerWidth) {
-      canvasSize = window.innerWidth * 0.8;
+      canvasSize = window.innerWidth * 0.7;
     } else {
-      canvasSize = window.innerHeight * 0.8;
+      canvasSize = window.innerHeight * 0.7;
     }
+
+    canvasSize = Number(canvasSize.toFixed(2)); // ajustar a 2 decimales
     
     canvas.setAttribute('width', canvasSize);
     canvas.setAttribute('height', canvasSize);
     
     elementsSize = canvasSize / 10.5;
+
+    playerPosition.x = undefined; // Ajustar tamaño de PLAYER al canvas
+    playerPosition.y = undefined; // Ajustar tamaño de PLAYER al canvas
   
     startGame(); // 
   }
@@ -75,8 +87,16 @@ function startGame() {
     return;    
   }
 
+   if (!timeStart) {
+     timeStart = Date.now();
+     timeInterval = setInterval(showTime, 1000);
+     showRecord();
+   }
+
   const mapRows = map.trim().split('\n'); // separar str por saltos de línea
   const mapCols = mapRows.map(row => row.trim().split('')); // separar fila por elemento
+
+  showLives(); // Vista de las vidas disponibles.
 
   context.clearRect(0, 0, canvasSize, canvasSize); // Elimina todos los elementos del canvas
   enemiesPosition = []; // Limpia el arreglo por render
@@ -205,8 +225,29 @@ function levelWin () {
   startGame();
 }
 
-function gameWin () {
-  console.log("ganaste");
+function gameWin() {
+  console.log('¡Terminaste el juego!');
+  clearInterval(timeInterval);
+
+  const recordTime = localStorage.getItem('record_time');
+  const playerTime = Date.now() - timeStart;
+
+  if (recordTime) {
+    if (recordTime >= playerTime) {
+      fixNumber(localStorage.setItem('record_time', playerTime));
+      setResult.innerHTML = 'SUPERASTE EL RECORD :)';
+      console.log('SUPERASTE EL RECORD :)');
+    } else {
+      setResult.innerHTML = 'lo siento, no superaste el record :(';
+      console.log('lo siento, no superaste el record :(');
+    }
+  } else {
+    fixNumber(localStorage.setItem('record_time', playerTime));
+    setResult.innerHTML = 'Primera vez? Muy bien, pero ahora trata de superar tu tiempo :)';
+    console.log('Primera vez? Muy bien, pero ahora trata de superar tu tiempo :)');
+  }
+
+  // console.log(playerTime);
 }
 
 function levelFailed() {
@@ -219,6 +260,7 @@ function levelFailed() {
     window.alert("Te moristes del todo");
     level = 0; // Reset al mapa
     lives = 3; // Reset a las vidas
+    timeStart = undefined; // Reset la marca de tiempo
   }
   
   // Estos valores se deben ejecutar siempre que ejecute levelFailed()
@@ -227,3 +269,26 @@ function levelFailed() {
   playerPosition.y = undefined;
   startGame();
 }
+
+function showLives() {
+
+  spanLives.innerHTML = ""; // Reset para mantener las vidas sin importar el render
+
+  const heartsA = Array(lives).fill(emojis['HEART']); // Creación y llenado de array de los corazones
+
+  heartsA.forEach(heart=>spanLives.append(heart)); // Crear los elementos dentro del SPAN
+
+}
+
+function showTime() {
+  timePlayed.innerHTML = fixNumber((Date.now() - timeStart) / 1000) + "      segundos";
+}
+
+function fixNumber(num) {
+  return Number(num.toFixed(1));
+}
+
+function showRecord () {
+  setRecord.innerHTML = "Record: 🏆" + (localStorage.getItem("record_time")); //
+}
+

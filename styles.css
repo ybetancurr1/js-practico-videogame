@@ -1,7 +1,7 @@
 body {
-    background-color: indigo;
-    color: #fff;  
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    background-color: rgb(221, 221, 221);
+    color: rgb(31, 31, 31);  
+    font-family: Verdana, Tahoma, sans-serif;
     margin: 0;
     padding: 0;
   }
@@ -24,13 +24,15 @@ body {
   .btns {
     display: flex;
     justify-content: center;
+    align-items: center;
+    
     flex-wrap: wrap;
     margin: 0 auto;
     width: 100%;
   }
   
   button {
-    background-color: #fdef05;
+    background-color: #6d3a8f;
     border-radius: 8px;
     border-color: #ff6600;
     font-family: inherit;
@@ -38,9 +40,13 @@ body {
     padding: 5px 20px;
     width: 100px;
     cursor: pointer;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    padding: 16px;
   }
   button:not(:last-child) {
-    margin-right: 10px;
+    margin-right: 4px;
   }
   
   .info-container {
@@ -49,6 +55,7 @@ body {
     margin: 0 auto;
     width: 80%;
     max-width: 460px;
+    font-size: 24px;
   }
   
   p {
